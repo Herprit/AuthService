@@ -21,7 +21,6 @@ namespace AuthService.Controllers
             _logger = logger;
         }
 
-        //[Route("/token")]
         [HttpPost]
         public IActionResult CreateToken(string userIdentifier)
         {
@@ -44,7 +43,6 @@ namespace AuthService.Controllers
                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SecurityKeyRandomStoreInKeyVault")),
                         SecurityAlgorithms.HmacSha256)),
                 new JwtPayload(claims));
-
 
             var jwtSeriToken = new JwtSecurityTokenHandler().WriteToken(token);
 
