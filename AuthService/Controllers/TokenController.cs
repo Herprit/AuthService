@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -15,10 +16,11 @@ namespace AuthService.Controllers
     public class TokenController : ControllerBase
     {
         private readonly ILogger<TokenController> _logger;
-
-        public TokenController(ILogger<TokenController> logger)
+        private readonly IConfiguration _configuration;
+        public TokenController(ILogger<TokenController> logger, IConfiguration iConfig)
         {
             _logger = logger;
+            _configuration = iConfig;
         }
 
         [HttpPost]
@@ -40,7 +42,7 @@ namespace AuthService.Controllers
             var token = new JwtSecurityToken(
                 new JwtHeader(
                     new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SecurityKeyRandomStoreInKeyVault")),
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["mySecret"])),
                         SecurityAlgorithms.HmacSha256)),
                 new JwtPayload(claims));
 
