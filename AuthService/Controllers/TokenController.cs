@@ -59,7 +59,7 @@ namespace AuthService.Controllers
         [HttpPost]
         public IActionResult RefreshToken(string token)
         {
-            //TODO scheck Identifier and ip address exit in db
+            //TODO check Identifier and ip address exit in db
             var nameIdentifierclaim = GetClaim(token, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
 
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
