@@ -49,7 +49,7 @@ namespace AuthService.Controllers
                 new JwtPayload(claims));
 
             var jwtSeriToken = new JwtSecurityTokenHandler().WriteToken(token);
-            //Save into localDb with ip
+            //TODO Save into localDb with ip
 
             SetTokenCookie(jwtSeriToken);
 
@@ -59,16 +59,16 @@ namespace AuthService.Controllers
         [HttpPost]
         public IActionResult RefreshToken(string token)
         {
-            //check Identifier and ip address exit in db
+            //TODO scheck Identifier and ip address exit in db
             var nameIdentifierclaim = GetClaim(token, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-            
+
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
             if (jwtToken.ValidTo <= DateTime.UtcNow)
             {
-              var jwtTokenRefreshed = GenerateToken(nameIdentifierclaim);
+                var jwtTokenRefreshed = GenerateToken(nameIdentifierclaim);
 
-               return Ok(jwtTokenRefreshed);
+                return Ok(jwtTokenRefreshed);
             }
 
             return Unauthorized();
@@ -82,7 +82,7 @@ namespace AuthService.Controllers
             {
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddMinutes(1),
-           
+
             };
 
             Response.Cookies.Append("refreshToken", token, cookieOptions);
