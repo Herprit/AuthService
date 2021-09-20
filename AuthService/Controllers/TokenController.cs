@@ -59,21 +59,28 @@ namespace AuthService.Controllers
         [HttpPost]
         public IActionResult RefreshToken(string token)
         {
-            //TODO check Identifier and ip address exit in db
-            var nameIdentifierclaim = GetClaim(token, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-
-            var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
-
-            if (jwtToken.ValidTo <= DateTime.UtcNow)
+            try
             {
-                var jwtTokenRefreshed = GenerateToken(nameIdentifierclaim);
+                //TODO check Identifier and ip address exit in db
+                var nameIdentifierclaim = GetClaim(token, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
 
-                return Ok(jwtTokenRefreshed);
+                var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+
+                if (jwtToken.ValidTo <= DateTime.UtcNow)
+                {
+                    var jwtTokenRefreshed = GenerateToken(nameIdentifierclaim);
+
+                    return Ok(jwtTokenRefreshed);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+
             }
 
             return Unauthorized();
         }
-
 
         private void SetTokenCookie(string token)
         {
