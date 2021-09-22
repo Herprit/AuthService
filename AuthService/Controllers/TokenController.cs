@@ -35,25 +35,28 @@ namespace AuthService.Controllers
         {
             var claims = new List<Claim>
             {
-                new Claim (ClaimTypes.NameIdentifier, userIdentifier),
+                new Claim (ClaimTypes.NameIdentifier, userIdentifier), //user id "can be username for testing"
                 new Claim (JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
                 new Claim (JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddMinutes(1)).ToUnixTimeSeconds().ToString()),
-                new Claim (ClaimTypes.Role, "zzz-12" ),
+                //get user role from db
+                new Claim (ClaimTypes.Role, "admin" ),
             };
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Secret"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
             var token = new JwtSecurityToken(
-                new JwtHeader(
-                    new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["mySecret"])),
-                        SecurityAlgorithms.HmacSha256)),
-                new JwtPayload(claims));
+                issuer: _configuration["Issuer"],
+                audience: _configuration["Audience"],
+                claims: claims,
+                signingCredentials:
+                creds);
 
-            var jwtSeriToken = new JwtSecurityTokenHandler().WriteToken(token);
-            //TODO Save into localDb with ip
+            var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-            SetTokenCookie(jwtSeriToken);
+            SetTokenCookie(jwtToken);
 
-            return jwtSeriToken;
+            return jwtToken;
         }
 
         [HttpPost]
